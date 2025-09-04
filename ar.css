@@ -1,0 +1,568 @@
+@import url("https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
+:root {
+  --primary: #547c23;
+  --white: #ffffff;
+  --black: #000000;
+}
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  font-family: "Montserrat", serif;
+  font-optical-sizing: auto;
+}
+h4,
+h5,
+h6 {
+  margin: 0;
+}
+#confetti-canvas {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 9999 !important;
+}
+.container {
+  overflow: hidden;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+#example-scanning-overlay {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background: transparent;
+  z-index: 2;
+}
+
+@media (min-aspect-ratio: 1/1) {
+  #example-scanning-overlay .inner {
+    width: 50vh;
+    height: 50vh;
+  }
+}
+
+@media (max-aspect-ratio: 1/1) {
+  #example-scanning-overlay .inner {
+    width: 80vw;
+    height: 80vw;
+  }
+}
+
+#example-scanning-overlay .inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+
+  background: linear-gradient(to right, white 10px, transparent 10px) 0 0,
+    linear-gradient(to right, white 10px, transparent 10px) 0 100%,
+    linear-gradient(to left, white 10px, transparent 10px) 100% 0,
+    linear-gradient(to left, white 10px, transparent 10px) 100% 100%,
+    linear-gradient(to bottom, white 10px, transparent 10px) 0 0,
+    linear-gradient(to bottom, white 10px, transparent 10px) 100% 0,
+    linear-gradient(to top, white 10px, transparent 10px) 0 100%,
+    linear-gradient(to top, white 10px, transparent 10px) 100% 100%;
+  background-repeat: no-repeat;
+  background-size: 40px 40px;
+}
+
+#example-scanning-overlay.hidden {
+  display: none;
+}
+
+#example-scanning-overlay img {
+  opacity: 0.6;
+  width: 90%;
+  align-self: center;
+}
+
+#example-scanning-overlay .inner .scanline {
+  position: absolute;
+  width: 100%;
+  height: 10px;
+  background: white;
+  animation: move 2s linear infinite;
+}
+
+.quizConatiner {
+  width: 1000000%;
+  height: 100vh;
+  top: 50%;
+  left: 50%;
+  transform: translate(0%, 0%);
+  background-color: rgba(177, 177, 177, 0.493);
+  z-index: 998;
+  display: none;
+}
+
+.glass_modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 560px;
+  height: 660px;
+  /* height: auto; */
+  background-color: rgba(247, 247, 247, 0.507);
+  backdrop-filter: blur(10px);
+  /* border: 2px solid var(--white); */
+  border-radius: 14px;
+  overflow: hidden;
+  z-index: 998;
+  display: none;
+}
+
+.glass_modal_close {
+  padding: 6px;
+  width: 30px;
+  height: 30px;
+  border-radius: 100px;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+.start-with-ar {
+  text-decoration: none;
+  color: var(--white);
+}
+
+.close-icon {
+  transition: transform 0.4s ease-in-out;
+  cursor: pointer;
+}
+
+.close-icon:hover {
+  transform: rotate(180deg);
+}
+
+.glass {
+  border: 1px solid var(--white) !important;
+  background-color: rgba(255, 255, 255, 0.055) !important;
+  border-radius: 6px !important;
+  width: 80%;
+  height: 50px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  font-family: "Libre Baskerville", serif;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  font-size: 18px !important;
+  /* font-weight: 600 !important; */
+}
+
+.glass_modal_conatiner {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+}
+
+.glass_modal_header {
+  height: 14%;
+  /* background-color: rgba(173, 216, 230, 0.712); */
+}
+
+.glass_modal_body {
+  flex-grow: 1 !important;
+  width: 100%;
+  height: auto;
+  /* background-color: rgba(24, 76, 94, 0.774);   */
+}
+
+.glass_modal_footer {
+  height: 16%;
+  /* background-color: rgba(173, 216, 230, 0.712); */
+}
+
+.circle_status {
+  width: 10px;
+  height: 10px;
+  margin-right: 10px;
+  background-color: #ffffff;
+  border-radius: 50%;
+}
+.active_circle {
+  /* transform: scale(1.6) !important; */
+  box-shadow: 0 0 8px #ffffff;
+  margin-right: 14px;
+  outline: 1px dashed #000000;
+  outline-offset: 1px;
+  animation: rotate_circles 1s linear infinite alternate;
+}
+
+.question {
+  font-size: 26px;
+  font-weight: 500;
+}
+
+.error {
+  background-color: rgb(255, 136, 136) !important;
+  animation: error 0.03s linear 6 alternate;
+}
+.success {
+  background-color: rgb(156 229 104) !important;
+}
+
+.next,
+.finish {
+  display: none !important;
+}
+.enabled {
+  display: block !important;
+}
+.diabled {
+  display: none !important;
+}
+
+.result {
+  font-family: "Dancing Script", serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  font-size: 50px;
+  font-weight: 600;
+}
+
+.back {
+  width: 50px;
+  height: 50px;
+  border-radius: 10px;
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 999;
+  background-color: var(--white);
+  cursor: pointer;
+}
+
+.back img {
+  width: 30px;
+  height: 30px;
+  margin: 10px;
+}
+
+@keyframes error {
+  0% {
+    transform: translate(-10px);
+  }
+  50% {
+    transform: translate(0);
+  }
+  100% {
+    transform: translate(10px);
+  }
+}
+
+@keyframes rotate_circles {
+  0% {
+    transform: rotate(0deg) scale(1.8);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes shake {
+  0% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px) rotate(-2deg);
+  }
+  50% {
+    transform: translateX(5px) rotate(2deg);
+  }
+  75% {
+    transform: translateX(-5px) rotate(-2deg);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* Add this class dynamically to trigger animation */
+.shake {
+  animation: shake 0.3s ease-in-out;
+}
+
+@keyframes animStar {
+  from {
+    transform: translateY(0);
+  }
+
+  to {
+    transform: translateY(-135rem);
+  }
+}
+
+@keyframes animStarRotate {
+  from {
+    transform: rotate(360deg);
+  }
+
+  to {
+    transform: rotate(0);
+  }
+}
+
+@keyframes gradient_301 {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes pulse_3011 {
+  0% {
+    transform: scale(0.75);
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.7);
+  }
+
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 10px rgba(0, 0, 0, 0);
+  }
+
+  100% {
+    transform: scale(0.75);
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+  }
+}
+
+@keyframes ani {
+  0% {
+    transform: translate(0);
+  }
+  15% {
+    transform: translateX(100px);
+  }
+  30% {
+    transform: translateX(-110px);
+  }
+  46% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .homeScreen {
+    background-image: url(./assets/img/leaf.png);
+  }
+  .main {
+    width: 80%;
+    height: auto;
+  }
+  .main_menu .card {
+    flex: 1 1 200px;
+    height: auto;
+    margin: 0 10px;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  .card_one,
+  .card_two {
+    width: auto;
+    height: auto;
+    margin: 0 10px;
+    border-radius: 12px;
+    word-wrap: break-word;
+  }
+  .text-body-content {
+    font-size: 2vw !important;
+    font-weight: 600 !important;
+  }
+
+  .glass_modal {
+    width: 80%;
+    height: 500px;
+    min-height: 400px;
+  }
+
+  .result,
+  .question,
+  .glass {
+    font-size: 4.4vw;
+  }
+  .scan-buttons img {
+    width: 50px !important;
+    height: 50px !important;
+  }
+}
+
+@media only screen and (max-width: 576px) {
+  .main {
+    width: 100%;
+    min-height: 600px;
+    height: auto;
+  }
+  .text-body-content {
+    font-size: 2.4vw !important;
+  }
+}
+/* Ms Subba Lakshmi */
+body {
+  font-family: Arial, sans-serif;
+  background-color: white;
+  color: white;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+.profile {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.profile-img {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  margin-right: 15px;
+}
+.profile-info h2 {
+  font-size: 18px;
+  margin: 0;
+}
+.profile-info p {
+  font-size: 14px;
+  color: #aaa;
+}
+.now-playing {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.now-playing-info h3 {
+  font-size: 18px;
+  margin: 0;
+}
+.now-playing-info p {
+  font-size: 14px;
+  color: #aaa;
+}
+.playlist {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.playlist li {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 10px;
+  margin: 5px 0;
+  border-radius: 10px;
+  background-color: #ffffff;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  align-items: left;
+}
+.playlist li:hover {
+  background-color: #1db954; /* Spotify Green */
+}
+.playlist-img {
+  width: 50px;
+  height: 50px;
+  border-radius: 5px;
+  margin-right: 10px;
+}
+.song-info h4 {
+  margin: 0;
+  font-size: 16px;
+}
+.song-info p {
+  margin: 0;
+  color: #aaa;
+}
+.playPauseBtn {
+  background: none;
+  border: none;
+  color: rgb(0, 0, 0);
+  font-size: 20px;
+  cursor: pointer;
+  margin-left: auto;
+}
+.control-btn:hover {
+  background-color: #1ed760;
+}
+
+/* Responsive Dialog Box */
+.dialog-box {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 860px;
+  height: auto;
+  background-color: rgba(247, 247, 247, 0.507);
+  backdrop-filter: blur(10px);
+  padding: 20px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  text-align: center;
+  border-radius: 10px;
+}
+.dialog-box img,
+.dialog-box video {
+  width: 100%;
+  max-height: 1250px;
+  object-fit: contain;
+  border-radius: 10px;
+}
+.dialog-box p {
+  font-size: 16px;
+  margin: 10px 0;
+  word-wrap: break-word;
+}
+.close-btn {
+  background: red;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 14px;
+  width: 50%;
+}
+.close-btn:hover {
+  background: darkred;
+}
+
+/* Responsive Adjustments */
+@media screen and (max-width: 600px) {
+  .dialog-box {
+    width: 95%;
+    max-width: 320px;
+  }
+  .dialog-box p {
+    font-size: 14px;
+  }
+}

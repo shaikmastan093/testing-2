@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>Welcome To Rudra Reality</title>
+
+    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v7.0.0/dist/aframe-extras.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.1.4/dist/mindar-image.prod.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.1.4/dist/mindar-image-aframe.prod.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.1.5/dist/mindar-image.prod.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+      crossorigin="anonymous"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/@tsparticles/confetti@3.0.3/tsparticles.confetti.bundle.min.js"></script>
+
+    <!-- Link to Custom JavaScript and CSS Files -->
+    <link rel="stylesheet" href="./ar.css" />
+
+    <!-- Gesture Control Scripts -->
+    <script src="gesture-detector.js"></script>
+    <script src="gesture-handler.js"></script>
+  </head>
+
+  <style>
+    /* Button Styles */
+    .scan-buttons {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      /* transform: translateX(-50%); */
+      z-index: 999;
+      display: flex;
+      gap: 20px;
+    }
+    .scan-buttons img {
+      width: 100px;
+      height: 100px;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .scan-buttons img:hover {
+      transform: scale(1.1);
+    }
+
+    /* Index images */
+    #example-scanning-overlay {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      background: transparent;
+      z-index: 2;
+    }
+
+    @media (min-aspect-ratio: 1/1) {
+      #example-scanning-overlay .inner {
+        width: 50vh;
+        height: 50vh;
+      }
+    }
+
+    @media (max-aspect-ratio: 1/1) {
+      #example-scanning-overlay .inner {
+        width: 80vw;
+        height: 80vw;
+      }
+    }
+
+    #example-scanning-overlay .inner {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      background: linear-gradient(to right, white 10px, transparent 10px) 0 0,
+        linear-gradient(to right, white 10px, transparent 10px) 0 100%,
+        linear-gradient(to left, white 10px, transparent 10px) 100% 0,
+        linear-gradient(to left, white 10px, transparent 10px) 100% 100%,
+        linear-gradient(to bottom, white 10px, transparent 10px) 0 0,
+        linear-gradient(to bottom, white 10px, transparent 10px) 100% 0,
+        linear-gradient(to top, white 10px, transparent 10px) 0 100%,
+        linear-gradient(to top, white 10px, transparent 10px) 100% 100%;
+      background-repeat: no-repeat;
+      background-size: 50px 50px;
+    }
+
+    #example-scanning-overlay.hidden {
+      display: none;
+    }
+
+    #example-scanning-overlay img {
+      opacity: 0.6;
+      width: 90%;
+      align-self: center;
+    }
+
+    #example-scanning-overlay .inner .scanline {
+      position: absolute;
+      width: 100%;
+      height: 10px;
+      background: white;
+      animation: move 2s linear infinite;
+    }
+
+    #splash {
+      width: 100%;
+      height: 100vh;
+      background-color: rgb(255, 255, 255);
+      /* opacity: 0.6; */
+      animation: ani 1s linear 5s;
+      z-index: 999;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #reality_logo {
+      animation: fromDown 0.6s linear 3s;
+    }
+
+    @keyframes move {
+      0%,
+      100% {
+        top: 0%;
+      }
+
+      50% {
+        top: calc(100% - 10px);
+      }
+    }
+
+    @keyframes ani {
+      0% {
+        transform: translate(0);
+      }
+      100% {
+        transform: translate(6000px);
+      }
+    }
+
+    @keyframes fromDown {
+      0% {
+        /* transform: translateY(500px); */
+        transform: scale(0);
+      }
+      100% {
+        /* transform: translate(0); */
+        transform: scale(1);
+      }
+    }
+
+    html.a-fullscreen .a-canvas {
+      background-color: rgba(0, 0, 0, 0) !important;
+    }
+
+  </style>
+
+
+  <body>
+    <div id="example-scanning-overlay" class="hidden">
+      <div class="inner">
+        <div class="scanline"></div>
+      </div>
+    </div>
+
+    <div class="back">
+        <a href="https://mobilear.rudran.digital/">
+          <img src="./assets/img/back.png" alt="" />
+        </a>
+    </div>
+
+    <!-- Image Buttons -->
+    <div class="scan-buttons">
+      <!-- <img
+        src="./assets/img/image1.png"
+        alt="Button 1"
+        onclick="showDialog('./assets/img/image1.png', 'This is the first button content.')"
+      /> -->
+
+      <!-- <img src="./assets/img/sangeethaicon.png" alt="Button 1" onclick="showDialog(null, './assets/vdo/sangeetha.mp4','')" /> -->
+      <img src="./assets/img/image2.png" alt="Button 2" onclick="openQuiz()" />
+    </div>
+
+    <!-- <div class="quizConatiner"> -->
+    <div class="glass_modal">
+      <div
+        class="glass_modal_close d-flex justify-content-center align-center close-icon"
+        onclick="closeModal('quest')"
+        style="cursor: pointer"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="100%"
+          height="100%"
+          fill="#000000"
+          class="bi bi-x-lg"
+          viewBox="0 0 16 16"
+        >
+          <path
+            stroke-width="2"
+            stroke="#000000"
+            d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"
+          />
+        </svg>
+      </div>
+      <div class="row p-0 m-0 glass_modal_conatiner">
+        <div class="col-12 glass_modal_header">
+          <div>
+            <h5 class="text-center mt-3 text-dark">Guess What?</h5>
+          </div>
+          <div
+            class="text-center d-flex justify-content-center mt-3 circle_parent"
+          ></div>
+        </div>
+        <div class="col-12 glass_modal_body my-2 py-2">
+          <div>
+            <p
+              class="question text-center text-dark fw-semibold"
+              style="font-family: 'Tangerine', serif"
+            ></p>
+          </div>
+          <div>
+            <p class="text-center fw-bold score"></p>
+          </div>
+          <ul id="options" class="list-group list-group-numbered">
+            <li>
+              <button
+                class="list-group-item my-2 mx-auto glass option"
+                onclick="checkAnswer(0)"
+              ></button>
+            </li>
+            <li>
+              <button
+                class="list-group-item my-2 mx-auto glass option"
+                onclick="checkAnswer(1)"
+              ></button>
+            </li>
+            <li>
+              <button
+                class="list-group-item my-2 mx-auto glass option"
+                onclick="checkAnswer(2)"
+              ></button>
+            </li>
+          </ul>
+          <!-- <img
+              src="./assets/gifs/happy.gif"
+              class="img-fluid mx-auto d-block"
+              width="200"
+              height="200"
+              alt=""
+            /> -->
+        </div>
+        <div class="col-12 glass_modal_footer">
+          <!-- <button class="btn btn-primary" id="next" onclick="nextQuestion()">
+              Next
+            </button> -->
+          <button
+            class="list-group-item mx-auto w-50 glass next"
+            onclick="nextQuestion()"
+          >
+            Next
+          </button>
+          <button
+            class="list-group-item mx-auto w-50 glass finish"
+            onclick="finished()"
+          >
+            Finish
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="dialogBox" class="dialog-box">
+      <div
+        class="glass_modal_close d-flex justify-content-center align-center close-icon"
+        onclick="closeModal('video')"
+        style="cursor: pointer"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="100%"
+          height="100%"
+          fill="#000000"
+          class="bi bi-x-lg"
+          viewBox="0 0 16 16"
+        >
+          <path
+            stroke-width="2"
+            stroke="#000000"
+            d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"
+          />
+        </svg>
+      </div>
+      <img id="dialogImage" src="" alt="Dialog Image" style="display: none;">
+      <video id="dialogVideo" poster="./assets/img/thumbnail.jpg" class="my-5" controls autoplay style="display: none;">
+          <source id="videoSource" src="" type="video/mp4">
+          Your browser does not support the video tag.
+      </video>
+      <p id="dialogText">Sample Text</p>
+      <!-- <button class="close-btn" onclick="closeDialog()">Close</button> -->
+  </div>
+
+    <a-scene
+      mindar-image="imageTargetSrc: ./target/seven.mind; filterMinCF: 0.0001; filterBeta: 1; uiScanning: 
+    #example-scanning-overlay"
+      color-space="sRGB"
+      renderer="colorManagement: true, physicallyCorrectLights: true"
+      fix-legacy-lights
+      vr-mode-ui="enabled: false"
+      device-orientation-permission-ui="enabled: false"
+      gltf-model="dracoDecoderPath: https://www.gstatic.com/draco/v1/decoders/"
+      maxTrack="1"
+      gesture-detector
+    >
+    <a-assets>
+      <a-assets id="assets">
+        <audio id="mysound2" src="./assets/sounds/tabla.mp3"></audio>
+        <audio id="mysound" src="./assets/sounds/sound.mp3"></audio>
+        <audio id="mysound3" src="./assets/sounds/devam.mp3"></audio>
+        <audio id="sitar" src="./assets/sounds/sit3.mp3"></audio>
+        <audio id="agra" src="./assets/sounds/bgm.mp3"></audio>
+        <audio id="arch" src="./assets/sounds/svsc.mp3"></audio>
+        <audio id="san" src="./assets/sounds/san.mp3"></audio>
+        <a-asset-item
+          id="particles"
+          src="./assets/glb/particle.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="Sitar_GLB"
+          src="./assets/glb/sitar_new.glb"
+        ></a-asset-item>
+        <!-- Load butterfly images dynamically via JS -->
+      </a-assets>
+
+      <a-mixin
+        id="animated"
+        animation="property: position; to: 0 0 0.2; dur: 600; easing: easeInOutQuad; loop: true; dir: alternate"
+      ></a-mixin>
+    </a-assets>
+
+      <a-camera
+        position="0 0 0"
+        look-controls="enabled: false"
+        cursor="fuse: false; rayOrigin: mouse;"
+        raycaster="far: 10000; objects: .clickable;"
+      >
+      </a-camera>
+      <!-- Butterfly Target -->
+      <a-entity
+        id="target0"
+        mindar-image-target="targetIndex: 0"
+        play-audio="sound: #mysound2"
+      >
+        <a-image
+          id="anim0"
+          src="#Thabela-and-dance_1"
+          position="0.02 0.05 0"
+          scale="1.1 0.6 1"
+          width="1"
+          height="1"
+        ></a-image>
+        <a-sound
+          id="sound0"
+          src="#mysound2"
+          autoplay="false"
+          position="0 0 0"
+          volume="1"
+        ></a-sound>
+      </a-entity>
+
+      <a-entity
+        id="target1"
+        mindar-image-target="targetIndex: 1"
+        play-audio="sound: #mysound"
+      >
+        <a-image
+          id="anim1"
+          src="#sitar_1"
+          position="0.02 0.02 0"
+          scale="1 0.64 1"
+          width="1"
+          height="1"
+        ></a-image>
+        <a-sound
+          id="ani1"
+          src="#mysound"
+          autoplay="false"
+          position="0 0 0"
+          volume="1"
+        ></a-sound>
+      </a-entity>
+      <a-entity
+        id="target2"
+        mindar-image-target="targetIndex: 2"
+        play-audio="sound: #mysound3"
+      >
+        <a-image
+          id="anim2"
+          src="#ms_1"
+          position="0 0.05 0"
+          scale="1 1.1 1"
+          width="1"
+          height="1"
+        ></a-image>
+        <a-sound
+          id="ani2"
+          src="#mysound3"
+          autoplay="false"
+          position="0 0 0"
+          volume="1"
+        ></a-sound>
+      </a-entity>
+
+      <a-entity
+        id="target3"
+        mindar-image-target="targetIndex: 3"
+        play-audio="sound: #sitar"
+      >
+        <a-entity
+          id="model1-entity"
+          gltf-model="#Sitar_GLB"
+          rotation="0 -90 -90"
+          position="0.1 0.08 -0.3"
+          scale="0.01 0.01 0.01"
+          gesture-handler
+          animation-mixer
+        >
+        </a-entity>
+        <a-entity
+          id="model1-entity"
+          gltf-model="#particles"
+          rotation="0 0 0"
+          position="-0.3 0.10 -0.3"
+          scale="0.01 0.01 0.01"
+          gesture-handler
+          animation-mixer
+        >
+        </a-entity>
+      </a-entity>
+
+      <a-entity
+      id="target4"
+      mindar-image-target="targetIndex: 4"
+      play-audio="sound: #agra"
+    >
+      <a-image
+        id="anim4"
+        src="#ag_1"
+        position="0 0.02 0"
+        scale="1 0.5 0.5"
+        width="1"
+        height="1"
+      ></a-image>
+      <a-sound
+        id="ani2"
+        src="#mysound3"
+        autoplay="false"
+        position="0 0 0"
+        volume="1"
+      ></a-sound>
+    </a-entity>
+
+    <a-entity
+      id="target5"
+      mindar-image-target="targetIndex: 5"
+      play-audio="sound: #arch"
+    >
+      <a-image
+        id="anim5"
+        src="#arch_1"
+        position="0 0 0"
+        scale="1 1.05 1"
+        width="1"
+        height="1"
+      ></a-image>
+      <a-sound
+        id="ani2"
+        src="#mysound3"
+        autoplay="false"
+        position="0 0 0"
+        volume="1"
+      ></a-sound>
+    </a-entity>
+    
+    <a-entity
+      id="target6"
+      mindar-image-target="targetIndex: 6"
+      play-audio="sound: #san"
+    >
+      <a-image
+        id="anim6"
+        src="#san_1"
+        position="0 0 0"
+        scale="1 .48 1"
+        width="1"
+        height="1"
+      ></a-image>
+      <a-sound
+        id="ani2"
+        src="#mysound3"
+        autoplay="false"
+        position="0 0 0"
+        volume="1"
+      ></a-sound>
+    </a-entity>
+
+    </a-scene>
+
+    <script src="./ar.js"></script>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const assets = document.getElementById("assets");
+
+        const characters = [
+          { char: `Thabela and dance `, count: 7 },
+          { char: `sitar `, count: 3 },
+          { char: `ms `, count: 3 },
+          { char: `ag `, count: 3 },
+          { char: `arch `, count: 3 },
+          { char: `san `, count: 7 },
+        ];
+
+        const frameSources = {};
+
+        characters.forEach(({ char, count }) => {
+          frameSources[char] = [];
+          for (let i = 0; i < count; i++) {
+            const img = document.createElement("img");
+            const imgId = `${char.trim().replace(/\s+/g, "-")}_${i}`;
+            img.setAttribute("id", imgId);
+            img.setAttribute("src", `./animate/${char}${i + 1}.png`);
+            assets.appendChild(img);
+            frameSources[char].push(`#${imgId}`);
+          }
+        });
+
+        const targets = [
+          {
+            targetId: "target0",
+            imageId: "anim0",
+            character: "Thabela and dance ",
+          },
+          { targetId: "target1", imageId: "anim1", character: "sitar " },
+          { targetId: "target2", imageId: "anim2", character: "ms " },
+          { targetId: "target4", imageId: "anim4", character: "ag " },
+          { targetId: "target5", imageId: "anim5", character: "arch " },
+          { targetId: "target6", imageId: "anim6", character: "san " },
+        ];
+
+        targets.forEach(({ targetId, imageId, character }) => {
+          const target = document.getElementById(targetId);
+          const plane = document.getElementById(imageId);
+          const frames = frameSources[character];
+          let frameIndex = 0;
+          let animationInterval;
+
+          target.addEventListener("targetFound", () => {
+            frameIndex = 0;
+            animationInterval = setInterval(() => {
+              plane.setAttribute("src", frames[frameIndex]);
+              frameIndex = (frameIndex + 1) % frames.length;
+            }, 200);
+          });
+
+          target.addEventListener("targetLost", () => {
+            clearInterval(animationInterval);
+          });
+        });
+      });
+
+      AFRAME.registerComponent("play-audio", {
+        schema: {
+          sound: { type: "selector" },
+        },
+        init: function () {
+          let entity = this.el;
+          let sound = this.data.sound;
+
+          entity.addEventListener("targetFound", () => {
+            console.log("Target Found! Playing audio...");
+            sound.play();
+          });
+
+          entity.addEventListener("targetLost", () => {
+            console.log("Target Lost! Stopping audio...");
+            sound.pause();
+            sound.currentTime = 0;
+          });
+        },
+      });
+    </script>
+  </body>
+</html>
