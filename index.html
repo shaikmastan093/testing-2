@@ -312,18 +312,10 @@
       <!-- <button class="close-btn" onclick="closeDialog()">Close</button> -->
   </div>
 
-    <a-scene
-      mindar-image="imageTargetSrc: ./target/seven.mind; filterMinCF: 0.0001; filterBeta: 1; uiScanning: 
-    #example-scanning-overlay"
-      color-space="sRGB"
-      renderer="colorManagement: true, physicallyCorrectLights: true"
-      fix-legacy-lights
-      vr-mode-ui="enabled: false"
-      device-orientation-permission-ui="enabled: false"
-      gltf-model="dracoDecoderPath: https://www.gstatic.com/draco/v1/decoders/"
-      maxTrack="1"
-      gesture-detector
-    >
+  <a-scene mindar-image="imageTargetSrc: ./target/seven.mind; missTolerance: 1; filterMinCF: 0.0001; filterBeta: 1; uiScanning: 
+    #example-scanning-overlay" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights: true"
+    fix-legacy-lights vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false"
+    gltf-model="dracoDecoderPath: https://www.gstatic.com/draco/v1/decoders/" maxTrack="1" gesture-detector embedded>
     <a-assets>
       <a-assets id="assets">
         <audio id="mysound2" src="./assets/sounds/tabla.mp3"></audio>
@@ -581,26 +573,7 @@
         });
       });
 
-    //   AFRAME.registerComponent("play-audio", {
-    //     schema: {
-    //       sound: { type: "selector" },
-    //     },
-    //     init: function () {
-    //       let entity = this.el;
-    //       let sound = this.data.sound;
-
-    //       entity.addEventListener("targetFound", () => {
-    //         console.log("Target Found! Playing audio...");
-    //         sound.play();
-    //       });
-
-    //       entity.addEventListener("targetLost", () => {
-    //         console.log("Target Lost! Stopping audio...");
-    //         sound.pause();
-    //         sound.currentTime = 0;
-    //       });
-    //     },
-    //   });
+    
      AFRAME.registerComponent("play-audio", {
     schema: {
       sound: { type: "selector" }, // link to <audio>
