@@ -190,13 +190,8 @@
 
     <!-- Image Buttons -->
     <div class="scan-buttons">
-      <!-- <img
-        src="./assets/img/image1.png"
-        alt="Button 1"
-        onclick="showDialog('./assets/img/image1.png', 'This is the first button content.')"
-      /> -->
+      
 
-      <!-- <img src="./assets/img/sangeethaicon.png" alt="Button 1" onclick="showDialog(null, './assets/vdo/sangeetha.mp4','')" /> -->
       <img src="./assets/img/image2.png" alt="Button 2" onclick="openQuiz()" />
     </div>
 
@@ -261,18 +256,10 @@
               ></button>
             </li>
           </ul>
-          <!-- <img
-              src="./assets/gifs/happy.gif"
-              class="img-fluid mx-auto d-block"
-              width="200"
-              height="200"
-              alt=""
-            /> -->
+         
         </div>
         <div class="col-12 glass_modal_footer">
-          <!-- <button class="btn btn-primary" id="next" onclick="nextQuestion()">
-              Next
-            </button> -->
+          
           <button
             class="list-group-item mx-auto w-50 glass next"
             onclick="nextQuestion()"
@@ -596,70 +583,18 @@
           let entity = this.el;
           let sound = this.data.sound;
 
-          // entity.addEventListener("targetFound", () => {
-          //   console.log("Target Found! Playing audio...");
-          //   sound.play();
-          // });
-
-            entity.addEventListener("targetFound", (event) => {
-      currentTargetImg = event;
-      if (!isDialogOpen) {
-        sound
-          .play()
-          .then(() => {
-            if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
-              tap.style.display = "none";
-              tap.style.backgroundColor = "transparent";
-            }
-          })
-          .catch((e) => {
-            if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
-              tap.style.display = "flex";
-              tap.style.backgroundColor = "#4d4d4dbb";
-            }
+          entity.addEventListener("targetFound", () => {
+            console.log("Target Found! Playing audio...");
+            sound.play();
           });
-        testSong = sound;
-      }
-    });
-
-    sound.onended = () => {
-      // nothing needed for subtitles anymore
-    };
-
-      //     entity.addEventListener("targetLost", () => {
-      //       console.log("Target Lost! Stopping audio...");
-      //       sound.pause();
-      //       sound.currentTime = 0;
-      //     });
-      //   },
-      // });
 
           entity.addEventListener("targetLost", () => {
-      console.log("Target Lost! Stopping audio...");
-      if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
-        tap.style.backgroundColor = "transparent";
-        tap.style.display = "none";
-      }
-      testSong = null;
-      sound.pause();
-      sound.currentTime = 0;
-      isAudiPlaying = false;
-    });
-  },
-});
-tap.addEventListener("click", () => {
-  if (testSong) {
-    testSong.play().then(() => {
-      if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
-        tap.style.backgroundColor = "transparent";
-        tap.style.display = "none";
-      }
-    });
-    console.log("kottikottikotti", testSong.currentTime);
-  }
-});
-
-window.addEventListener("deviceorientation", handleOrientation, true);
+            console.log("Target Lost! Stopping audio...");
+            sound.pause();
+            sound.currentTime = 0;
+          });
+        },
+      });
     </script>
   </body>
 </html>
