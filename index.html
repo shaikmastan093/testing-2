@@ -176,11 +176,17 @@
       </div>
     </div>
 
-    <div class="tapParent" style="display: none; background-color: transparent">
-    <div class="tap">
-      <img src="./assets/gifs/finger.gif" alt="" />
-    </div>
-  </div>
+  <div id="tapOverlay" style="
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: none; /* hidden by default */
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+">
+  <img src="./assets/img/finger-tap.gif" alt="Tap to start" style="width: 120px; height: auto;" />
+</div>
 
     <div class="back">
         <a href="https://mobilear.rudran.digital/">
@@ -575,26 +581,76 @@
         });
       });
 
-      AFRAME.registerComponent("play-audio", {
-        schema: {
-          sound: { type: "selector" },
-        },
-        init: function () {
-          let entity = this.el;
-          let sound = this.data.sound;
+    //   AFRAME.registerComponent("play-audio", {
+    //     schema: {
+    //       sound: { type: "selector" },
+    //     },
+    //     init: function () {
+    //       let entity = this.el;
+    //       let sound = this.data.sound;
 
-          entity.addEventListener("targetFound", () => {
-            console.log("Target Found! Playing audio...");
-            sound.play();
-          });
+    //       entity.addEventListener("targetFound", () => {
+    //         console.log("Target Found! Playing audio...");
+    //         sound.play();
+    //       });
 
-          entity.addEventListener("targetLost", () => {
-            console.log("Target Lost! Stopping audio...");
-            sound.pause();
-            sound.currentTime = 0;
-          });
-        },
+    //       entity.addEventListener("targetLost", () => {
+    //         console.log("Target Lost! Stopping audio...");
+    //         sound.pause();
+    //         sound.currentTime = 0;
+    //       });
+    //     },
+    //   });
+     AFRAME.registerComponent("play-audio", {
+    schema: {
+      sound: { type: "selector" }, // link to <audio>
+    },
+    init: function () {
+      const entity = this.el;
+      const sound = this.data.sound;
+      const tapOverlay = document.getElementById("tapOverlay");
+
+      const isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+
+      // When target found
+      entity.addEventListener("targetFound", () => {
+        console.log("Target Found! Trying to play audio...");
+
+        if (isiOS) {
+          // Try autoplay on iOS
+          const playPromise = sound.play();
+
+          if (playPromise !== undefined) {
+            playPromise
+              .then(() => {
+                console.log("Audio autoplayed on iOS ✅");
+                tapOverlay.style.display = "none";
+              })
+              .catch(() => {
+                console.log("iOS blocked autoplay ❌, showing overlay");
+                tapOverlay.style.display = "flex";
+
+                // Wait for user tap
+                tapOverlay.addEventListener("click", () => {
+                  sound.play();
+                  tapOverlay.style.display = "none";
+                }, { once: true });
+              });
+          }
+        } else {
+          // Non-iOS → play normally
+          sound.play();
+        }
       });
+
+      // When target lost
+      entity.addEventListener("targetLost", () => {
+        console.log("Target Lost! Stopping audio...");
+        sound.pause();
+        sound.currentTime = 0;
+      });
+    },
+  });
     </script>
   </body>
 </html>
