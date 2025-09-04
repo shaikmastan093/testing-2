@@ -255,6 +255,34 @@ h6 {
   margin: 10px;
 }
 
+.tapParent {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 999;
+}
+
+.tap {
+  width: 120px;
+  display: flex;
+  overflow: hidden;
+  justify-content: center;
+  position: absolute;
+  z-index: 999;
+  transform: translateX(-50%, -50%);
+}
+
+.tap img {
+  width: 100%;
+  height: 100%;
+  border-radius: 20px;
+}
 @keyframes error {
   0% {
     transform: translate(-10px);

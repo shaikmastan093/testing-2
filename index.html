@@ -176,6 +176,12 @@
       </div>
     </div>
 
+    <div class="tapParent" style="display: none; background-color: transparent">
+    <div class="tap">
+      <img src="./assets/gifs/finger.gif" alt="" />
+    </div>
+  </div>
+
     <div class="back">
         <a href="https://mobilear.rudran.digital/">
           <img src="./assets/img/back.png" alt="" />
@@ -590,18 +596,70 @@
           let entity = this.el;
           let sound = this.data.sound;
 
-          entity.addEventListener("targetFound", () => {
-            console.log("Target Found! Playing audio...");
-            sound.play();
+          // entity.addEventListener("targetFound", () => {
+          //   console.log("Target Found! Playing audio...");
+          //   sound.play();
+          // });
+
+            entity.addEventListener("targetFound", (event) => {
+      currentTargetImg = event;
+      if (!isDialogOpen) {
+        sound
+          .play()
+          .then(() => {
+            if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+              tap.style.display = "none";
+              tap.style.backgroundColor = "transparent";
+            }
+          })
+          .catch((e) => {
+            if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+              tap.style.display = "flex";
+              tap.style.backgroundColor = "#4d4d4dbb";
+            }
           });
+        testSong = sound;
+      }
+    });
+
+    sound.onended = () => {
+      // nothing needed for subtitles anymore
+    };
+
+      //     entity.addEventListener("targetLost", () => {
+      //       console.log("Target Lost! Stopping audio...");
+      //       sound.pause();
+      //       sound.currentTime = 0;
+      //     });
+      //   },
+      // });
 
           entity.addEventListener("targetLost", () => {
-            console.log("Target Lost! Stopping audio...");
-            sound.pause();
-            sound.currentTime = 0;
-          });
-        },
-      });
+      console.log("Target Lost! Stopping audio...");
+      if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+        tap.style.backgroundColor = "transparent";
+        tap.style.display = "none";
+      }
+      testSong = null;
+      sound.pause();
+      sound.currentTime = 0;
+      isAudiPlaying = false;
+    });
+  },
+});
+tap.addEventListener("click", () => {
+  if (testSong) {
+    testSong.play().then(() => {
+      if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+        tap.style.backgroundColor = "transparent";
+        tap.style.display = "none";
+      }
+    });
+    console.log("kottikottikotti", testSong.currentTime);
+  }
+});
+
+window.addEventListener("deviceorientation", handleOrientation, true);
     </script>
   </body>
 </html>
